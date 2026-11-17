@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Full-scan profile of train.parquet: 132,811,004 rows of pooled type 1 diabetes CGM and insulin telemetry from 15 studies.">
+<meta name="color-scheme" content="light dark">
+<title>T1D Telemetry Profile</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* standalone document reset (the artifact host supplied this when hosted) */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0}
+img{max-width:100%;height:auto}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+a{color:var(--accent)}
+.skip{
+  position:absolute;left:-9999px;top:0;z-index:100;background:var(--surface-2);color:var(--ink);
+  padding:10px 16px;border:1px solid var(--axis);border-radius:0 0 6px 0;font-size:13px;
+  text-decoration:none;
+}
+.skip:focus{left:0}
+/* theme toggle */
+#themer{
+  position:fixed;top:14px;right:16px;z-index:60;display:flex;gap:2px;padding:3px;
+  background:var(--surface-2);border:1px solid var(--rule);border-radius:7px;
+  box-shadow:var(--shadow);
+}
+#themer button{
+  font:inherit;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.09em;
+  text-transform:uppercase;padding:5px 9px;border:none;border-radius:5px;cursor:pointer;
+  background:transparent;color:var(--muted);line-height:1.4;
+}
+#themer button:hover{color:var(--ink)}
+#themer button[aria-pressed="true"]{background:var(--accent);color:#fff}
+@media print{
+  #themer,.skip{display:none}
+  body{background:#fff}
+  .panel{break-inside:avoid;box-shadow:none}
+  details.tv{display:none}
+}
+@media (max-width:640px){
+  #themer{top:auto;bottom:12px;right:12px}
+  .wrap{padding:34px 16px 60px}
+}
+</style>
+<style>
+:root{
+  color-scheme: light;
+  --plane:#f1f3f5;
+  --surface:#f7f8f9;
+  --surface-2:#ffffff;
+  --ink:#0d1114;
+  --ink-2:#4a535c;
+  --muted:#7d868f;
+  --grid:#e2e6ea;
+  --axis:#c2c9d0;
+  --rule:rgba(13,17,20,0.10);
+  --accent:#2a78d6;
+  --accent-soft:rgba(42,120,214,0.14);
+  --b1:#184f95;
+  --b2:#5598e7;
+  --b3:#0ca30c;
+  --b4:#fab219;
+  --b5:#c04a00;
+  --flag:#c04a00;
+  --shadow:0 1px 2px rgba(13,17,20,.05), 0 8px 24px -16px rgba(13,17,20,.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:where(:not([data-theme="light"])){
+    color-scheme: dark;
+    --plane:#0d0f11;
+    --surface:#15171a;
+    --surface-2:#1b1e22;
+    --ink:#f2f5f7;
+    --ink-2:#aeb7c0;
+    --muted:#848d96;
+    --grid:#262a2f;
+    --axis:#3a4046;
+    --rule:rgba(242,245,247,0.12);
+    --accent:#4f93e3;
+    --accent-soft:rgba(79,147,227,0.20);
+    --b1:#2a78d6;
+    --b2:#79b2f0;
+    --b3:#0ca30c;
+    --b4:#fab219;
+    --b5:#e06a1f;
+    --flag:#e8863f;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --plane:#0d0f11;
+  --surface:#15171a;
+  --surface-2:#1b1e22;
+  --ink:#f2f5f7;
+  --ink-2:#aeb7c0;
+  --muted:#848d96;
+  --grid:#262a2f;
+  --axis:#3a4046;
+  --rule:rgba(242,245,247,0.12);
+  --accent:#4f93e3;
+  --accent-soft:rgba(79,147,227,0.20);
+  --b1:#2a78d6;
+  --b2:#79b2f0;
+  --b3:#0ca30c;
+  --b4:#fab219;
+  --b5:#e06a1f;
+  --flag:#e8863f;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--plane);
+  color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:14px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1140px;margin:0 auto;padding:40px 28px 72px;display:flex;flex-direction:column;gap:34px}
+h1,h2,h3{font-family:Archivo,system-ui,sans-serif;text-wrap:balance;margin:0}
+h1{font-size:clamp(30px,4.6vw,46px);font-weight:700;letter-spacing:-.025em;line-height:1.04}
+h2{font-size:19px;font-weight:600;letter-spacing:-.012em}
+h3{font-size:14px;font-weight:600;letter-spacing:-.005em}
+p{margin:0}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:500;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+}
+
+/* ---------- masthead ---------- */
+.mast{display:flex;flex-direction:column;gap:16px}
+.mast .lede{color:var(--ink-2);max-width:65ch;font-size:15.5px}
+.fileid{
+  display:flex;flex-wrap:wrap;gap:0;border:1px solid var(--rule);border-radius:7px;
+  background:var(--surface);overflow:hidden;box-shadow:var(--shadow);
+}
+.fileid div{
+  padding:9px 15px;display:flex;gap:9px;align-items:baseline;
+  border-right:1px solid var(--rule);flex:1 1 auto;min-width:0;
+}
+.fileid div:last-child{border-right:none}
+.fileid dt{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-family:"IBM Plex Mono",monospace}
+.fileid dd{margin:0;font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:500;color:var(--ink);white-space:nowrap}
+
+/* ---------- vitals ---------- */
+.vitals{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:8px;overflow:hidden}
+.vital{background:var(--surface);padding:16px 18px 15px;display:flex;flex-direction:column;gap:3px}
+.vital .n{font-family:Archivo,sans-serif;font-size:27px;font-weight:700;letter-spacing:-.03em;line-height:1.06;color:var(--ink)}
+.vital .n small{font-size:14px;font-weight:600;color:var(--ink-2);letter-spacing:0}
+.vital .l{font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);font-family:"IBM Plex Mono",monospace}
+.vital .s{font-size:12px;color:var(--ink-2);margin-top:2px}
+
+/* ---------- panels ---------- */
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:9px;padding:22px 24px 20px;box-shadow:var(--shadow)}
+.phead{display:flex;flex-direction:column;gap:5px;margin-bottom:18px}
+.phead .sub{color:var(--ink-2);font-size:13.5px;max-width:72ch}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:860px){.grid2{grid-template-columns:1fr}}
+
+.chartbox{position:relative;width:100%;overflow-x:auto}
+svg{display:block;max-width:100%;height:auto;overflow:visible}
+text{font-family:"IBM Plex Mono",monospace;fill:var(--muted)}
+.axlab{font-size:10px;letter-spacing:.09em;text-transform:uppercase}
+.tick{font-size:10.5px}
+.vlab{font-size:11px;font-weight:600;fill:var(--ink)}
+
+/* ---------- TIR ---------- */
+.tirbar{display:flex;gap:2px;height:30px;margin-top:4px}
+.tirbar span{border-radius:2px;min-width:2px}
+.tirlist{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:7px;overflow:hidden;margin-top:14px}
+.tirlist .row{background:var(--surface);padding:11px 13px;display:flex;flex-direction:column;gap:2px}
+.tirlist .row .top{display:flex;align-items:center;gap:7px}
+.swatch{width:10px;height:10px;border-radius:2px;flex:none;box-shadow:0 0 0 2px var(--surface)}
+.tirlist .nm{font-size:12px;font-weight:600;color:var(--ink)}
+.tirlist .pc{font-family:"IBM Plex Mono",monospace;font-size:17px;font-weight:600;color:var(--ink);letter-spacing:-.01em}
+.tirlist .rg{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted)}
+
+/* ---------- coverage ---------- */
+.tier{margin-bottom:20px}
+.tier:last-child{margin-bottom:0}
+.tierhead{display:flex;align-items:baseline;gap:10px;padding-bottom:7px;margin-bottom:9px;border-bottom:1px solid var(--grid)}
+.tierhead .cnt{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted)}
+.cov{display:grid;grid-template-columns:minmax(132px,auto) 1fr 62px;gap:4px 11px;align-items:center}
+.cov .cname{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cov .ctrack{height:9px;background:var(--grid);border-radius:2px;position:relative;overflow:hidden}
+.cov .cfill{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:2px;min-width:1.5px}
+.cov .cpc{font-family:"IBM Plex Mono",monospace;font-size:11.5px;text-align:right;color:var(--ink);font-weight:500}
+.cov .r{display:contents}
+
+/* ---------- tables ---------- */
+.tablewrap{overflow-x:auto;border:1px solid var(--rule);border-radius:7px}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{padding:7px 12px;text-align:left;border-bottom:1px solid var(--grid);white-space:nowrap}
+th{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--surface-2)}
+tbody tr:last-child td{border-bottom:none}
+td.num{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;text-align:right}
+td.nm{font-weight:500;color:var(--ink)}
+.minibar{display:inline-block;height:8px;background:var(--accent);border-radius:2px;vertical-align:middle;min-width:2px}
+
+details.tv{margin-top:16px}
+details.tv summary{
+  cursor:pointer;font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-2);padding:7px 11px;border:1px solid var(--rule);
+  border-radius:6px;display:inline-block;background:var(--surface-2);
+}
+details.tv summary:hover{color:var(--ink);border-color:var(--axis)}
+details.tv summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+details.tv[open] summary{margin-bottom:12px}
+
+/* ---------- flags ---------- */
+.flags{display:flex;flex-direction:column;gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:8px;overflow:hidden}
+.flag{background:var(--surface);padding:14px 17px;display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start}
+.flag .ic{
+  width:19px;height:19px;border-radius:50%;flex:none;display:grid;place-items:center;
+  background:var(--flag);color:var(--surface);font-size:12px;font-weight:700;
+  font-family:Archivo,sans-serif;margin-top:1px;
+}
+.flag .bd h3{margin-bottom:2px}
+.flag .bd p{color:var(--ink-2);font-size:13px;max-width:78ch}
+.flag .bd code{font-family:"IBM Plex Mono",monospace;font-size:12px;background:var(--accent-soft);padding:1px 4px;border-radius:3px;color:var(--ink)}
+
+/* ---------- breakdown ---------- */
+.bd3{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:24px}
+.blist{display:flex;flex-direction:column;gap:7px;margin-top:11px}
+.brow{display:grid;grid-template-columns:1fr 54px;gap:9px;align-items:center}
+.brow .bl{font-size:12px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brow .bv{font-family:"IBM Plex Mono",monospace;font-size:12px;text-align:right;color:var(--ink);font-weight:500}
+.btrack{grid-column:1/-1;height:7px;background:var(--grid);border-radius:2px;position:relative;overflow:hidden;margin-top:-4px}
+.bfill{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:2px}
+
+footer{color:var(--muted);font-size:12px;border-top:1px solid var(--rule);padding-top:16px;display:flex;flex-direction:column;gap:5px}
+footer code{font-family:"IBM Plex Mono",monospace}
+
+/* ---------- tooltip ---------- */
+#tip{
+  position:fixed;pointer-events:none;z-index:50;opacity:0;transition:opacity .09s;
+  background:var(--surface-2);border:1px solid var(--axis);border-radius:6px;
+  padding:7px 10px;font-size:12px;box-shadow:var(--shadow);max-width:250px;
+  color:var(--ink);
+}
+#tip .tt{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);display:block}
+#tip .tv2{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:13px}
+#tip .ts{color:var(--ink-2);font-size:11.5px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.hit{cursor:crosshair}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div id="themer" role="group" aria-label="Color theme">
+  <button type="button" data-set="light" aria-pressed="false">Light</button>
+  <button type="button" data-set="dark" aria-pressed="false">Dark</button>
+  <button type="button" data-set="auto" aria-pressed="true">Auto</button>
+</div>
+<main id="main" class="wrap">
+
+  <header class="mast">
+    <span class="eyebrow">Parquet profile · full-scan, 132 811 004 rows</span>
+    <h1>Type 1 diabetes telemetry, pooled from 15 studies</h1>
+    <p class="lede">Every figure on this page comes from a complete pass over <span class="mono">data/train.parquet</span> — no sampling. The corpus is dense where a closed-loop pump writes (CGM, basal, bolus) and nearly empty where a wearable would, which is the constraint that decides what can run on-device.</p>
+    <dl class="fileid">
+      <div><dt>Rows</dt><dd>132,811,004</dd></div>
+      <div><dt>Columns</dt><dd>37</dd></div>
+      <div><dt>On disk</dt><dd>1.19 GB</dd></div>
+      <div><dt>Row groups</dt><dd>129</dd></div>
+      <div><dt>Span</dt><dd>2011-11 → 2027-07</dd></div>
+    </dl>
+  </header>
+
+  <section class="vitals">
+    <div class="vital"><span class="l">Subjects</span><span class="n">1,730</span><span class="s">unique <span class="mono">(study, id)</span> pairs — only 1,188 distinct ids</span></div>
+    <div class="vital"><span class="l">Observation</span><span class="n">1,920 <small>yr</small></span><span class="s">median follow-up 355 d (IQR 102–520)</span></div>
+    <div class="vital"><span class="l">Cadence</span><span class="n">288 <small>/day</small></span><span class="s">exactly one sample per 5 min</span></div>
+    <div class="vital"><span class="l">CGM readings</span><span class="n">111.3 <small>M</small></span><span class="s">83.8% of rows carry a glucose value</span></div>
+    <div class="vital"><span class="l">Closed loop</span><span class="n">85.1<small>%</small></span><span class="s">rows under an automated insulin algorithm</span></div>
+  </section>
+
+  <!-- ============ HERO: glucose distribution ============ -->
+  <section class="panel">
+    <div class="phead">
+      <span class="eyebrow">Glycemia</span>
+      <h2>Where 111.3 million glucose readings actually sit</h2>
+      <p class="sub">Counts per 5 mg/dL bin, colored by the clinical consensus bands. Cool = below target, green = in target, warm = above. Median 138 mg/dL, mean 149.1, IQR 108–182.</p>
+    </div>
+    <div class="chartbox"><svg id="cgm" viewBox="0 0 980 310" role="img" aria-label="Histogram of CGM readings by concentration, banded into clinical glycemic ranges"></svg></div>
+
+    <div class="tirbar" id="tirbar" aria-hidden="true"></div>
+    <div class="tirlist" id="tirlist"></div>
+
+    <details class="tv">
+      <summary>Table view — glycemic bands</summary>
+      <div class="tablewrap"><table id="tirtable">
+        <thead><tr><th>Band</th><th>Range (mg/dL)</th><th class="num">Readings</th><th class="num">Share</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </details>
+  </section>
+
+  <!-- ============ channel coverage ============ -->
+  <section class="panel">
+    <div class="phead">
+      <span class="eyebrow">Channel coverage</span>
+      <h2>37 columns, three populations</h2>
+      <p class="sub">Non-null share of all 132.8 M rows, read from the Parquet column statistics. The split is not gradual — it falls off a cliff between <span class="mono">carbs</span> and <span class="mono">heartrate</span>.</p>
+    </div>
+    <div id="coverage"></div>
+    <details class="tv">
+      <summary>Table view — all 37 columns</summary>
+      <div class="tablewrap"><table id="covtable">
+        <thead><tr><th>Column</th><th>Tier</th><th class="num">Non-null rows</th><th class="num">Coverage</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </details>
+  </section>
+
+  <!-- ============ wearables / subject reach ============ -->
+  <section class="panel">
+    <div class="phead">
+      <span class="eyebrow">Per-subject reach</span>
+      <h2>How many subjects a channel can actually train on</h2>
+      <p class="sub">A column's row-coverage hides who it reaches. Counted per subject, the wearable channels collapse to a few dozen people — a hard ceiling on any multimodal model trained here.</p>
+    </div>
+    <div class="chartbox"><svg id="reach" viewBox="0 0 980 268" role="img" aria-label="Number of subjects carrying at least one value for each channel"></svg></div>
+  </section>
+
+  <!-- ============ studies ============ -->
+  <section class="panel">
+    <div class="phead">
+      <span class="eyebrow">Composition</span>
+      <h2>One study supplies three fifths of the corpus</h2>
+      <p class="sub">Loop — a crowd-sourced DIY closed-loop dataset — contributes 81.0 M rows from 761 subjects. The 7 smallest studies together contribute under 1.9 M rows.</p>
+    </div>
+    <div class="tablewrap"><table id="studies">
+      <thead><tr><th>Study</th><th class="num">Subjects</th><th class="num">Rows</th><th>Share of rows</th><th class="num">Rows / subject</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </section>
+
+  <!-- ============ timeline ============ -->
+  <section class="panel">
+    <div class="phead">
+      <span class="eyebrow">Accrual</span>
+      <h2>Collection volume by quarter</h2>
+      <p class="sub">Total rows and the CGM-bearing subset, same unit and same scale. Accrual is strongly peaked: 2019 Q1 alone contributes 18.8 M rows, almost all of it Loop. Collection thins sharply after 2021.</p>
+    </div>
+    <div class="chartbox"><svg id="timeline" viewBox="0 0 980 272" role="img" aria-label="Quarterly row counts, total and CGM-bearing, from 2011 to 2027"></svg></div>
+  </section>
+
+  <!-- ============ cohort ============ -->
+  <section class="panel">
+    <div class="phead">
+      <span class="eyebrow">Cohort</span>
+      <h2>Who and what hardware</h2>
+      <p class="sub">Demographics attributed once per subject, device and algorithm shares weighted by row.</p>
+    </div>
+    <div class="grid2" style="align-items:start">
+      <div>
+        <h3>Age at observation</h3>
+        <p class="sub" style="font-size:12.5px;margin:3px 0 0">Median 28 yr · 5th–95th pct 6–63 · median age at diagnosis 10.0 yr</p>
+        <div class="chartbox"><svg id="age" viewBox="0 0 470 210" role="img" aria-label="Distribution of subject age in five-year bins"></svg></div>
+      </div>
+      <div class="bd3" style="grid-template-columns:1fr">
+        <div><h3>CGM device</h3><div class="blist" id="bd-dev"></div></div>
+        <div><h3>Insulin delivery algorithm</h3><div class="blist" id="bd-alg"></div></div>
+      </div>
+    </div>
+    <div class="bd3" style="margin-top:24px">
+      <div><h3>Delivery modality</h3><div class="blist" id="bd-mod"></div></div>
+      <div><h3>Gender</h3><div class="blist" id="bd-gen"></div></div>
+      <div><h3>Ethnicity (top 6 of 29 levels)</h3><div class="blist" id="bd-eth"></div></div>
+    </div>
+  </section>
+
+  <!-- ============ integrity ============ -->
+  <section class="panel">
+    <div class="phead">
+      <span class="eyebrow">Before you model</span>
+      <h2>Five things the schema does not tell you</h2>
+      <p class="sub">Each of these was measured in the same full scan, and each one changes how you split, join, or impute.</p>
+    </div>
+    <div class="flags">
+      <div class="flag"><div class="ic">1</div><div class="bd">
+        <h3><code>id</code> is not a primary key</h3>
+        <p>222 of 1,188 ids appear in two or more studies — <code>id=1</code> alone spans AZT1D, CTR3, Flair and HUPA-UCM, and ids 540–596 collide between Loop and OhioT1DM. Group and split on <code>(source_file, id)</code> or you will leak the same label across folds while believing subjects are disjoint.</p>
+      </div></div>
+      <div class="flag"><div class="ic">2</div><div class="bd">
+        <h3>65,993 rows are dated in the future</h3>
+        <p>Four subjects carry timestamps past today, running to <code>2027-07-14 15:30</code>. Any recency feature, train/validation cut by date, or "days since enrollment" term inherits the error.</p>
+      </div></div>
+      <div class="flag"><div class="ic">3</div><div class="bd">
+        <h3>Wearable channels reach dozens of subjects, not 1,730</h3>
+        <p><code>steps</code> covers 0.61% of rows and 57 subjects; <code>heartrate</code> 0.68% and 49; <code>skin_temp</code> and <code>galvanic_skin_response</code> 0.14% and 17 each. <code>workout_intensity</code> has 219 non-null values in the entire file. Treat these as a small side-cohort, not as features of the corpus.</p>
+      </div></div>
+      <div class="flag"><div class="ic">4</div><div class="bd">
+        <h3>Ethnicity is free text with duplicate codings</h3>
+        <p>29 distinct levels, including both <code>Black/African American</code> (1.6%) and <code>Black/African-American</code> (0.4%) as separate values, plus compound entries like <code>White, Hispanic/Latino</code>. Normalize before any stratification or fairness claim.</p>
+      </div></div>
+      <div class="flag"><div class="ic">5</div><div class="bd">
+        <h3>The sensor clips the distribution at both ends</h3>
+        <p>100,568 readings sit below 40 mg/dL and 290,998 above 400 — the reporting floor and ceiling of the CGM hardware, not physiology. The histogram above is drawn over 20–400, so that upper pile-up sits outside the frame. Tails are censored, which breaks a Gaussian likelihood on raw values.</p>
+      </div></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Source <code>data/train.parquet</code> · 132,811,004 rows × 37 columns · full scan, no sampling · profiled 17 Nov 2026.</span>
+    <span>Glycemic bands follow the ADA/ATTD consensus: level-2 low &lt;54, level-1 low 54–70, target 70–180, level-1 high 180–250, level-2 high &gt;250 mg/dL.</span>
+  </footer>
+</main>
+
+<div id="tip" role="status" aria-live="polite"></div>
+
+<script>
+const D = {"cgm":[{"x":22.5,"y":1},{"x":27.5,"y":0},{"x":32.5,"y":1},{"x":37.5,"y":100559},{"x":42.5,"y":137535},{"x":47.5,"y":192498},{"x":52.5,"y":344521},{"x":57.5,"y":578273},{"x":62.5,"y":905582},{"x":67.5,"y":1331304},{"x":72.5,"y":1852338},{"x":77.5,"y":2417209},{"x":82.5,"y":2986672},{"x":87.5,"y":3503587},{"x":92.5,"y":3948800},{"x":97.5,"y":4299537},{"x":102.5,"y":4539271},{"x":107.5,"y":4683740},{"x":112.5,"y":4725459},{"x":117.5,"y":4706799},{"x":122.5,"y":4621251},{"x":127.5,"y":4459253},{"x":132.5,"y":4257948},{"x":137.5,"y":4057043},{"x":142.5,"y":3839348},{"x":147.5,"y":3610344},{"x":152.5,"y":3390096},{"x":157.5,"y":3170585},{"x":162.5,"y":2974732},{"x":167.5,"y":2788996},{"x":172.5,"y":2599476},{"x":177.5,"y":2414602},{"x":182.5,"y":2251235},{"x":187.5,"y":2100301},{"x":192.5,"y":1949925},{"x":197.5,"y":1811724},{"x":202.5,"y":1676439},{"x":207.5,"y":1553598},{"x":212.5,"y":1441669},{"x":217.5,"y":1333529},{"x":222.5,"y":1228688},{"x":227.5,"y":1136880},{"x":232.5,"y":1047661},{"x":237.5,"y":962623},{"x":242.5,"y":883242},{"x":247.5,"y":811632},{"x":252.5,"y":743005},{"x":257.5,"y":680174},{"x":262.5,"y":619683},{"x":267.5,"y":564560},{"x":272.5,"y":511927},{"x":277.5,"y":465882},{"x":282.5,"y":419976},{"x":287.5,"y":380081},{"x":292.5,"y":342702},{"x":297.5,"y":310379},{"x":302.5,"y":278668},{"x":307.5,"y":250533},{"x":312.5,"y":224708},{"x":317.5,"y":204071},{"x":322.5,"y":181850},{"x":327.5,"y":163029},{"x":332.5,"y":144866},{"x":337.5,"y":129249},{"x":342.5,"y":116348},{"x":347.5,"y":104154},{"x":352.5,"y":93709},{"x":357.5,"y":83493},{"x":362.5,"y":75055},{"x":367.5,"y":67104},{"x":372.5,"y":60194},{"x":377.5,"y":53247},{"x":382.5,"y":48232},{"x":387.5,"y":43013},{"x":392.5,"y":37908},{"x":397.5,"y":34580}],"tl":[{"q":"2011Q4","rows":12708,"cgm":12309},{"q":"2012Q1","rows":37008,"cgm":13499},{"q":"2012Q2","rows":128769,"cgm":59834},{"q":"2012Q3","rows":168574,"cgm":72891},{"q":"2012Q4","rows":157588,"cgm":68221},{"q":"2013Q1","rows":140845,"cgm":115341},{"q":"2013Q2","rows":108899,"cgm":53235},{"q":"2013Q3","rows":196744,"cgm":92307},{"q":"2013Q4","rows":310343,"cgm":105490},{"q":"2014Q1","rows":461403,"cgm":99284},{"q":"2014Q2","rows":778728,"cgm":117906},{"q":"2014Q3","rows":1629535,"cgm":226537},{"q":"2014Q4","rows":3820819,"cgm":911629},{"q":"2015Q1","rows":4820817,"cgm":4325825},{"q":"2015Q2","rows":4479432,"cgm":3980633},{"q":"2015Q3","rows":2675783,"cgm":2357462},{"q":"2015Q4","rows":105326,"cgm":52568},{"q":"2016Q1","rows":36100,"cgm":0},{"q":"2016Q2","rows":26208,"cgm":0},{"q":"2016Q3","rows":6611,"cgm":0},{"q":"2017Q1","rows":7759,"cgm":7494},{"q":"2017Q2","rows":26208,"cgm":25196},{"q":"2017Q3","rows":91504,"cgm":68258},{"q":"2017Q4","rows":785128,"cgm":643190},{"q":"2018Q1","rows":2990478,"cgm":2587321},{"q":"2018Q2","rows":6773894,"cgm":5826381},{"q":"2018Q3","rows":12044774,"cgm":10539116},{"q":"2018Q4","rows":16589300,"cgm":14480434},{"q":"2019Q1","rows":18759055,"cgm":16586021},{"q":"2019Q2","rows":17285892,"cgm":15453213},{"q":"2019Q3","rows":12596877,"cgm":11341537},{"q":"2019Q4","rows":7582909,"cgm":6748748},{"q":"2020Q1","rows":2479350,"cgm":2095723},{"q":"2020Q2","rows":1172855,"cgm":952979},{"q":"2020Q3","rows":2018497,"cgm":1649197},{"q":"2020Q4","rows":2319723,"cgm":1930319},{"q":"2021Q1","rows":2247970,"cgm":1972797},{"q":"2021Q2","rows":1901276,"cgm":1702352},{"q":"2021Q3","rows":1306344,"cgm":1151990},{"q":"2021Q4","rows":987218,"cgm":899163},{"q":"2022Q1","rows":576361,"cgm":548211},{"q":"2022Q2","rows":154116,"cgm":148998},{"q":"2022Q3","rows":8353,"cgm":6854},{"q":"2023Q1","rows":45902,"cgm":0},{"q":"2023Q2","rows":203858,"cgm":113107},{"q":"2023Q3","rows":504089,"cgm":331789},{"q":"2023Q4","rows":621741,"cgm":431428},{"q":"2024Q1","rows":399285,"cgm":331515},{"q":"2024Q2","rows":62829,"cgm":23006},{"q":"2024Q3","rows":46012,"cgm":7308},{"q":"2024Q4","rows":21751,"cgm":0},{"q":"2025Q2","rows":29043,"cgm":24137},{"q":"2025Q3","rows":2420,"cgm":2122},{"q":"2026Q4","rows":1151,"cgm":955},{"q":"2027Q1","rows":15364,"cgm":12292},{"q":"2027Q2","rows":44394,"cgm":37089},{"q":"2027Q3","rows":5084,"cgm":4712}],"age":[{"lo":0,"hi":5,"y":23},{"lo":5,"hi":10,"y":131},{"lo":10,"hi":15,"y":187},{"lo":15,"hi":20,"y":108},{"lo":20,"hi":25,"y":77},{"lo":25,"hi":30,"y":91},{"lo":30,"hi":35,"y":106},{"lo":35,"hi":40,"y":102},{"lo":40,"hi":45,"y":91},{"lo":45,"hi":50,"y":67},{"lo":50,"hi":55,"y":61},{"lo":55,"hi":60,"y":51},{"lo":60,"hi":65,"y":43},{"lo":65,"hi":70,"y":28},{"lo":70,"hi":75,"y":11},{"lo":75,"hi":80,"y":3},{"lo":80,"hi":85,"y":3}],"cats":{"cgm_device":{"Medtronic Enlite":280861,"Dexcom G6":84605716,"FreeStyle Libre 2":436228,"Medtronic Guardian 4":161248,"Dexcom One":128153,"Dexcom G4":21388578,"Guardian 3":5977590,"Dexcom G5":12998469,"Abbott Libre":109614},"insulin_delivery_modality":{"SAP":18998161,"AID":112006707,"MDI":641742},"insulin_delivery_algorithm":{"Control-IQ":14752235,"640G":186750,"Basal-Bolus":18141924,"Omnipod 5":46629,"780G Advanced HCL":3000056,"Basal-IQ":607872,"SmartGuard":3163447,"iLet Bionic Pancreas":8278133,"LoopAlgorithm":80989684,"MDI":450453},"treatment_group":{"CLC":14058051,"SC":1060185,"AHCL":2814143,"670G":3163447,"BP":5205066,"BPFiasp":3073067,"CGM Only":12208847,"CGM+BGM":5533566},"gender":{"Male":51374959,"Female":61473005,"Non-binary":136719},"ethnicity":{"White":111485154,"Asian":2447608,"Unknown/not reported":254653,"White, Haitian":50661,"Hispanic/Latino":839930,"Black/African American":2056330,"White, Hispanic/Latino":3795256,"Native Hawaiian/Other Pacific Islander":55983,"White, Native Hawaiian/Other Pacific Islander":54001,"White, Asian":886971,"Asian, White":115834,"American Indian/Alaskan Native, Hispanic/Latino":62147,"Asian, Middle Eastern":66926,"Asian, Pakistani":56354,"Asian, African American":63627,"More than one race":504295,"Black/African American, Hispanic/Latino":53620,"More than one race, Hispanic/Latino":70908,"American Indian/Alaskan Native":26260,"Black/African-American":497544,"White, American Indian/Alaskan Native, Hispanic/Latino":217202,"White, Black/African-American":88832,"White, Black/African-American, Hispanic/Latino":105660,"Asian, Hispanic/Latino":124727,"White, Black/African-American, American Indian/Alaskan Native":118232,"Black/African-American, Hispanic/Latino":242060,"White, Asian, Hispanic/Latino":103732,"Native Hawaiian/Other Pacific Islander, Hispanic/Latino":100388,"Hispanic/Latino, More than one race":213048},"source_file":{"OhioT1DM":190966,"AZT1D":241871,"BrisT1D":973326,"CTR3":1962436,"DCLP3":5175028,"DCLP5":5243288,"Flair":5977590,"HUPA-UCM":207022,"IOBP2":8278133,"Loop":80989684,"PEDAP":4699920,"ReplaceBG":18139804,"ShanghaiT1DM":41666,"T1D-UOM":651795,"SIESTA":38475}}};
+
+const NTOT = 132811004;
+const CGMTOT = 111349891;
+const fmt = n => n.toLocaleString('en-US');
+const cmp = n => n>=1e6 ? (n/1e6).toFixed(n>=1e7?0:1)+'M' : n>=1e3 ? (n/1e3).toFixed(0)+'k' : String(n);
+const SVGNS='http://www.w3.org/2000/svg';
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+function el(tag, attrs, parent){
+  const n = document.createElementNS(SVGNS, tag);
+  for(const k in attrs) n.setAttribute(k, attrs[k]);
+  if(parent) parent.appendChild(n);
+  return n;
+}
+
+/* ---------- tooltip ---------- */
+const tip = document.getElementById('tip');
+function showTip(e, html){
+  tip.innerHTML = html;
+  tip.style.opacity = 1;
+  const r = tip.getBoundingClientRect();
+  let x = e.clientX + 14, y = e.clientY - r.height/2;
+  if(x + r.width > innerWidth - 8) x = e.clientX - r.width - 14;
+  y = Math.max(8, Math.min(y, innerHeight - r.height - 8));
+  tip.style.left = x+'px'; tip.style.top = y+'px';
+}
+const hideTip = () => tip.style.opacity = 0;
+
+/* =======================================================
+   1. CGM histogram with clinical bands
+   ======================================================= */
+const BANDS = [
+  {nm:'Level 2 low',  rg:'< 54',    lo:0,   hi:54,   v:'--b1', pc:0.70},
+  {nm:'Level 1 low',  rg:'54 – 70', lo:54,  hi:70,   v:'--b2', pc:2.53},
+  {nm:'In target',    rg:'70 – 180',lo:70,  hi:180,  v:'--b3', pc:71.71},
+  {nm:'Level 1 high', rg:'180 – 250',lo:180,hi:250,  v:'--b4', pc:18.13},
+  {nm:'Level 2 high', rg:'> 250',   lo:250, hi:1000, v:'--b5', pc:6.94}
+];
+const bandOf = x => BANDS.find(b => x>=b.lo && x<b.hi) || BANDS[4];
+
+function drawCGM(){
+  const svg = document.getElementById('cgm');
+  svg.innerHTML='';
+  const W=980,H=310, m={t:14,r:16,b:46,l:60};
+  const iw=W-m.l-m.r, ih=H-m.t-m.b;
+  const X0=20, X1=400, YMAX=5e6;
+  const sx = x => m.l + (x-X0)/(X1-X0)*iw;
+  const sy = y => m.t + ih - y/YMAX*ih;
+
+  // gridlines + y ticks
+  for(let v=0; v<=YMAX; v+=1e6){
+    el('line',{x1:m.l,x2:m.l+iw,y1:sy(v),y2:sy(v),stroke:css('--grid'),'stroke-width':1},svg);
+    const t=el('text',{x:m.l-9,y:sy(v)+3.5,'text-anchor':'end',class:'tick'},svg);
+    t.textContent = v===0 ? '0' : (v/1e6)+'M';
+  }
+  // bars
+  const bw = iw/((X1-X0)/5);
+  D.cgm.forEach(p=>{
+    if(p.y<=0) return;
+    const b = bandOf(p.x);
+    const h = Math.max(0.6, p.y/YMAX*ih);
+    const r = el('rect',{x:sx(p.x-2.5)+0.35, y:sy(p.y), width:Math.max(0.8,bw-0.7), height:h,
+      fill:css(b.v), rx:1, class:'hit'},svg);
+    r.addEventListener('mousemove', e=>showTip(e,
+      `<span class="tt">${p.x-2.5}–${p.x+2.5} mg/dL</span>
+       <span class="tv2">${fmt(p.y)}</span> <span class="ts">readings · ${(p.y/CGMTOT*100).toFixed(2)}%</span>
+       <br><span class="ts">${b.nm}</span>`));
+    r.addEventListener('mouseleave', hideTip);
+  });
+  // band boundary rules
+  [54,70,180,250].forEach(v=>{
+    el('line',{x1:sx(v),x2:sx(v),y1:m.t,y2:m.t+ih,stroke:css('--axis'),'stroke-width':1,
+      'stroke-dasharray':'3 3'},svg);
+  });
+  // baseline
+  el('line',{x1:m.l,x2:m.l+iw,y1:m.t+ih,y2:m.t+ih,stroke:css('--axis'),'stroke-width':1},svg);
+  // x ticks
+  [40,54,70,100,140,180,220,250,300,350,400].forEach(v=>{
+    el('line',{x1:sx(v),x2:sx(v),y1:m.t+ih,y2:m.t+ih+4,stroke:css('--axis'),'stroke-width':1},svg);
+    const t=el('text',{x:sx(v),y:m.t+ih+17,'text-anchor':'middle',class:'tick'},svg);
+    t.textContent=v;
+  });
+  const xl=el('text',{x:m.l+iw/2,y:H-6,'text-anchor':'middle',class:'axlab'},svg);
+  xl.textContent='Sensor glucose (mg/dL)';
+  const yl=el('text',{x:0,y:0,class:'axlab',transform:`translate(13,${m.t+ih/2}) rotate(-90)`,'text-anchor':'middle'},svg);
+  yl.textContent='Readings per 5 mg/dL bin';
+  // median marker
+  const mx=sx(138);
+  el('line',{x1:mx,x2:mx,y1:m.t-2,y2:m.t+ih,stroke:css('--ink'),'stroke-width':1.5},svg);
+  const mt=el('text',{x:mx+6,y:m.t+9,class:'vlab','text-anchor':'start'},svg);
+  mt.textContent='median 138';
+}
+
+function drawTIR(){
+  const bar=document.getElementById('tirbar'), list=document.getElementById('tirlist');
+  bar.innerHTML=''; list.innerHTML='';
+  BANDS.forEach(b=>{
+    const s=document.createElement('span');
+    s.style.flex=b.pc; s.style.background=`var(${b.v})`;
+    bar.appendChild(s);
+    const row=document.createElement('div'); row.className='row';
+    row.innerHTML=`<div class="top"><span class="swatch" style="background:var(${b.v})"></span>
+      <span class="nm">${b.nm}</span></div>
+      <span class="pc">${b.pc.toFixed(2)}%</span>
+      <span class="rg">${b.rg} mg/dL · ${fmt(Math.round(b.pc/100*CGMTOT))}</span>`;
+    list.appendChild(row);
+  });
+  const tb=document.querySelector('#tirtable tbody');
+  tb.innerHTML = BANDS.map(b=>`<tr><td class="nm">${b.nm}</td><td class="mono">${b.rg}</td>
+    <td class="num">${fmt(Math.round(b.pc/100*CGMTOT))}</td><td class="num">${b.pc.toFixed(2)}%</td></tr>`).join('');
+}
+
+/* =======================================================
+   2. Column coverage, three tiers
+   ======================================================= */
+const COLS=[
+  ['date',132811004],['id',132811004],['is_test',132811004],['source_file',132811004],
+  ['subject_split_across_traintest',132811004],['age',132620038],['insulin_delivery_modality',131646610],
+  ['insulin_delivery_algorithm',129617183],['insulin_delivery_device',126445742],['cgm_device',126086457],
+  ['age_of_diagnosis',125188626],['weight',125162589],['height',124870619],['ethnicity',124757943],
+  ['insulin_type_basal',123078775],['insulin_type_bolus',122410902],['insulin',120067708],
+  ['bolus',117583799],['basal',116418615],['gender',112984683],['CGM',111349923],
+  ['is_pregnant',89465577],['carbs',88058123],['treatment_group',47116372],['calories_burned',30997836],
+  ['randomization_date',29351741],['extension_date',7590353],
+  ['heartrate',901832],['steps',805199],['skin_temp',179801],['galvanic_skin_response',179655],
+  ['workout_duration',124144],['workout_label',100873],['air_temp',86626],['meal_label',77874],
+  ['misc_notes',43831],['workout_intensity',219]
+];
+const TIERS=[
+  {nm:'Dense', note:'at or above 80% of rows — the modelling core', test:p=>p>=80},
+  {nm:'Partial', note:'5–80% — present for some studies only', test:p=>p>=5&&p<80},
+  {nm:'Trace', note:'below 1% — a side-cohort, not a feature', test:p=>p<5}
+];
+function drawCoverage(){
+  const host=document.getElementById('coverage'); host.innerHTML='';
+  TIERS.forEach(t=>{
+    const rows=COLS.filter(([,n])=>t.test(n/NTOT*100));
+    const sec=document.createElement('div'); sec.className='tier';
+    sec.innerHTML=`<div class="tierhead"><h3>${t.nm}</h3>
+      <span class="cnt">${rows.length} column${rows.length>1?'s':''} · ${t.note}</span></div>`;
+    const g=document.createElement('div'); g.className='cov';
+    rows.forEach(([nm,n])=>{
+      const pc=n/NTOT*100;
+      const r=document.createElement('div'); r.className='r';
+      r.innerHTML=`<span class="cname" title="${nm}">${nm}</span>
+        <span class="ctrack"><span class="cfill" style="width:${Math.max(0.12,pc)}%"></span></span>
+        <span class="cpc">${pc>=1?pc.toFixed(1):pc>=0.01?pc.toFixed(2):'<0.01'}%</span>`;
+      r.addEventListener('mousemove',e=>showTip(e,
+        `<span class="tt">${nm}</span><span class="tv2">${fmt(n)}</span>
+         <span class="ts">non-null rows</span><br>
+         <span class="ts">${fmt(NTOT-n)} null · ${pc.toFixed(4)}% coverage</span>`));
+      r.addEventListener('mouseleave',hideTip);
+      g.appendChild(r);
+    });
+    sec.appendChild(g); host.appendChild(sec);
+  });
+  document.querySelector('#covtable tbody').innerHTML = COLS.map(([nm,n])=>{
+    const pc=n/NTOT*100;
+    const tier=TIERS.find(t=>t.test(pc)).nm;
+    return `<tr><td class="nm mono">${nm}</td><td>${tier}</td>
+      <td class="num">${fmt(n)}</td><td class="num">${pc.toFixed(4)}%</td></tr>`;
+  }).join('');
+}
+
+/* =======================================================
+   3. Per-subject reach
+   ======================================================= */
+const REACH=[
+  ['CGM',1727,'glucose'],['insulin',1727,'insulin'],['bolus',1682,'insulin'],['basal',1682,'insulin'],
+  ['carbs',1102,'meals'],['calories_burned',482,'activity'],['steps',57,'wearable'],['heartrate',49,'wearable'],
+  ['skin_temp',17,'wearable'],['galvanic_skin_response',17,'wearable'],['workout_intensity',10,'wearable']
+];
+function drawReach(){
+  const svg=document.getElementById('reach'); svg.innerHTML='';
+  const W=980,H=268,m={t:10,r:120,b:40,l:168};
+  const iw=W-m.l-m.r, ih=H-m.t-m.b;
+  const MAX=1730, bh=ih/REACH.length;
+  const sx=v=>v/MAX*iw;
+  for(let v=0;v<=MAX;v+=346){
+    el('line',{x1:m.l+sx(v),x2:m.l+sx(v),y1:m.t,y2:m.t+ih,stroke:css('--grid'),'stroke-width':1},svg);
+    const t=el('text',{x:m.l+sx(v),y:m.t+ih+16,'text-anchor':'middle',class:'tick'},svg);
+    t.textContent=v;
+  }
+  REACH.forEach((r,i)=>{
+    const [nm,n]=r, y=m.t+i*bh+bh*0.18, h=bh*0.64;
+    const g=el('g',{class:'hit'},svg);
+    el('rect',{x:m.l,y:y,width:iw,height:h,fill:css('--grid'),rx:2,opacity:.5},g);
+    el('rect',{x:m.l,y:y,width:Math.max(2,sx(n)),height:h,fill:css('--accent'),rx:2},g);
+    const lb=el('text',{x:m.l-11,y:y+h/2+3.5,'text-anchor':'end',class:'tick'},g);
+    lb.textContent=nm; lb.setAttribute('fill',css('--ink-2'));
+    const vl=el('text',{x:m.l+Math.max(2,sx(n))+9,y:y+h/2+3.5,class:'vlab'},g);
+    vl.textContent=`${n} subj · ${(n/1730*100).toFixed(1)}%`;
+    g.addEventListener('mousemove',e=>showTip(e,
+      `<span class="tt">${nm}</span><span class="tv2">${n}</span>
+       <span class="ts">of 1,730 subjects</span><br><span class="ts">${r[2]} channel</span>`));
+    g.addEventListener('mouseleave',hideTip);
+  });
+  el('line',{x1:m.l,x2:m.l,y1:m.t,y2:m.t+ih,stroke:css('--axis'),'stroke-width':1},svg);
+  const xl=el('text',{x:m.l+iw/2,y:H-4,'text-anchor':'middle',class:'axlab'},svg);
+  xl.textContent='Subjects with at least one non-null value (of 1,730)';
+}
+
+/* =======================================================
+   4. Studies table
+   ======================================================= */
+const STUDY=[
+  ['Loop',761,80989684],['ReplaceBG',188,18139804],['IOBP2',299,8278133],['Flair',102,5977590],
+  ['DCLP5',90,5243288],['DCLP3',101,5175028],['PEDAP',59,4699920],['CTR3',30,1962436],
+  ['BrisT1D',18,973326],['T1D-UOM',13,651795],['AZT1D',21,241871],['HUPA-UCM',20,207022],
+  ['OhioT1DM',12,190966],['ShanghaiT1DM',11,41666],['SIESTA',5,38475]
+];
+function drawStudies(){
+  const mx=STUDY[0][2];
+  document.querySelector('#studies tbody').innerHTML=STUDY.map(([nm,s,r])=>{
+    const pc=r/NTOT*100;
+    return `<tr><td class="nm">${nm}</td><td class="num">${s}</td><td class="num">${fmt(r)}</td>
+      <td style="min-width:190px"><span class="minibar" style="width:${(r/mx*150).toFixed(1)}px"></span>
+      <span class="mono" style="font-size:11.5px;color:var(--ink-2);margin-left:8px">${pc<0.1?'<0.1':pc.toFixed(1)}%</span></td>
+      <td class="num">${fmt(Math.round(r/s))}</td></tr>`;
+  }).join('');
+}
+
+/* =======================================================
+   5. Quarterly timeline
+   ======================================================= */
+function drawTimeline(){
+  const svg=document.getElementById('timeline'); svg.innerHTML='';
+  const W=980,H=272,m={t:16,r:16,b:48,l:62};
+  const iw=W-m.l-m.r, ih=H-m.t-m.b;
+  const d=D.tl, n=d.length;
+  const YMAX=2e7;
+  const sx=i=>m.l+i/(n-1)*iw, sy=v=>m.t+ih-v/YMAX*ih;
+  for(let v=0;v<=YMAX;v+=5e6){
+    el('line',{x1:m.l,x2:m.l+iw,y1:sy(v),y2:sy(v),stroke:css('--grid'),'stroke-width':1},svg);
+    const t=el('text',{x:m.l-9,y:sy(v)+3.5,'text-anchor':'end',class:'tick'},svg);
+    t.textContent=v===0?'0':(v/1e6)+'M';
+  }
+  const area=d.map((p,i)=>`${i?'L':'M'}${sx(i).toFixed(1)},${sy(p.rows).toFixed(1)}`).join('')
+    +`L${sx(n-1).toFixed(1)},${sy(0)}L${sx(0).toFixed(1)},${sy(0)}Z`;
+  el('path',{d:area,fill:css('--accent'),opacity:.16},svg);
+  el('path',{d:d.map((p,i)=>`${i?'L':'M'}${sx(i).toFixed(1)},${sy(p.rows).toFixed(1)}`).join(''),
+    fill:'none',stroke:css('--accent'),'stroke-width':2,'stroke-linejoin':'round'},svg);
+  el('path',{d:d.map((p,i)=>`${i?'L':'M'}${sx(i).toFixed(1)},${sy(p.cgm).toFixed(1)}`).join(''),
+    fill:'none',stroke:css('--b3'),'stroke-width':2,'stroke-dasharray':'5 3','stroke-linejoin':'round'},svg);
+  el('line',{x1:m.l,x2:m.l+iw,y1:m.t+ih,y2:m.t+ih,stroke:css('--axis'),'stroke-width':1},svg);
+  d.forEach((p,i)=>{
+    if(!p.q.endsWith('Q1')||+p.q.slice(0,4)%2) return;
+    el('line',{x1:sx(i),x2:sx(i),y1:m.t+ih,y2:m.t+ih+4,stroke:css('--axis'),'stroke-width':1},svg);
+    const t=el('text',{x:sx(i),y:m.t+ih+17,'text-anchor':'middle',class:'tick'},svg);
+    t.textContent=p.q.slice(0,4);
+  });
+  // legend
+  const lg=el('g',{},svg);
+  const items=[['Total rows',css('--accent'),0],['CGM-bearing rows',css('--b3'),1]];
+  items.forEach(([lab,c,i])=>{
+    const x=m.l+i*150, y=H-8;
+    el('line',{x1:x,x2:x+16,y1:y-4,y2:y-4,stroke:c,'stroke-width':2,
+      'stroke-dasharray':i?'5 3':'none'},lg);
+    const t=el('text',{x:x+22,y:y,class:'tick'},lg);
+    t.textContent=lab; t.setAttribute('fill',css('--ink-2'));
+  });
+  // crosshair
+  const ch=el('line',{x1:0,x2:0,y1:m.t,y2:m.t+ih,stroke:css('--axis'),'stroke-width':1,opacity:0},svg);
+  const dotA=el('circle',{r:4,fill:css('--accent'),stroke:css('--surface'),'stroke-width':2,opacity:0},svg);
+  const dotB=el('circle',{r:4,fill:css('--b3'),stroke:css('--surface'),'stroke-width':2,opacity:0},svg);
+  const hit=el('rect',{x:m.l,y:m.t,width:iw,height:ih,fill:'transparent',class:'hit'},svg);
+  hit.addEventListener('mousemove',e=>{
+    const r=svg.getBoundingClientRect();
+    const px=(e.clientX-r.left)/r.width*W;
+    let i=Math.round((px-m.l)/iw*(n-1)); i=Math.max(0,Math.min(n-1,i));
+    const p=d[i];
+    ch.setAttribute('x1',sx(i)); ch.setAttribute('x2',sx(i)); ch.setAttribute('opacity',1);
+    dotA.setAttribute('cx',sx(i)); dotA.setAttribute('cy',sy(p.rows)); dotA.setAttribute('opacity',1);
+    dotB.setAttribute('cx',sx(i)); dotB.setAttribute('cy',sy(p.cgm)); dotB.setAttribute('opacity',1);
+    showTip(e,`<span class="tt">${p.q}</span>
+      <span class="tv2">${fmt(p.rows)}</span> <span class="ts">rows</span><br>
+      <span class="ts">${fmt(p.cgm)} with CGM · ${(p.cgm/p.rows*100).toFixed(1)}%</span>`);
+  });
+  hit.addEventListener('mouseleave',()=>{
+    hideTip(); [ch,dotA,dotB].forEach(x=>x.setAttribute('opacity',0));
+  });
+}
+
+/* =======================================================
+   6. Age histogram
+   ======================================================= */
+function drawAge(){
+  const svg=document.getElementById('age'); svg.innerHTML='';
+  const W=470,H=210,m={t:12,r:10,b:42,l:40};
+  const iw=W-m.l-m.r, ih=H-m.t-m.b;
+  const a=D.age, YMAX=200;
+  const bw=iw/a.length;
+  for(let v=0;v<=YMAX;v+=50){
+    el('line',{x1:m.l,x2:m.l+iw,y1:m.t+ih-v/YMAX*ih,y2:m.t+ih-v/YMAX*ih,stroke:css('--grid'),'stroke-width':1},svg);
+    const t=el('text',{x:m.l-8,y:m.t+ih-v/YMAX*ih+3.5,'text-anchor':'end',class:'tick'},svg);
+    t.textContent=v;
+  }
+  a.forEach((p,i)=>{
+    const h=p.y/YMAX*ih;
+    const r=el('rect',{x:m.l+i*bw+1,y:m.t+ih-h,width:bw-2,height:Math.max(h,p.y?1:0),
+      fill:css('--accent'),rx:2,class:'hit'},svg);
+    r.addEventListener('mousemove',e=>showTip(e,
+      `<span class="tt">${p.lo}–${p.hi} years</span><span class="tv2">${p.y}</span>
+       <span class="ts">subjects</span>`));
+    r.addEventListener('mouseleave',hideTip);
+  });
+  el('line',{x1:m.l,x2:m.l+iw,y1:m.t+ih,y2:m.t+ih,stroke:css('--axis'),'stroke-width':1},svg);
+  a.forEach((p,i)=>{
+    if(p.lo%20) return;
+    const x=m.l+i*bw;
+    el('line',{x1:x,x2:x,y1:m.t+ih,y2:m.t+ih+4,stroke:css('--axis'),'stroke-width':1},svg);
+    const t=el('text',{x:x,y:m.t+ih+17,'text-anchor':'middle',class:'tick'},svg);
+    t.textContent=p.lo;
+  });
+  const xl=el('text',{x:m.l+iw/2,y:H-5,'text-anchor':'middle',class:'axlab'},svg);
+  xl.textContent='Age (years) · 1,188 subjects';
+  const yl=el('text',{x:0,y:0,class:'axlab','text-anchor':'middle',
+    transform:`translate(11,${m.t+ih/2}) rotate(-90)`},svg);
+  yl.textContent='Subjects';
+}
+
+/* =======================================================
+   7. Breakdown lists
+   ======================================================= */
+function breakdown(id, obj, topN, denom){
+  const host=document.getElementById(id); host.innerHTML='';
+  const tot = denom || Object.values(obj).reduce((a,b)=>a+b,0);
+  const rows=Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,topN);
+  const mx=rows[0][1];
+  rows.forEach(([k,v])=>{
+    const d=document.createElement('div'); d.className='brow';
+    d.innerHTML=`<span class="bl" title="${k}">${k}</span>
+      <span class="bv">${(v/tot*100).toFixed(1)}%</span>
+      <span class="btrack"><span class="bfill" style="width:${(v/mx*100).toFixed(2)}%"></span></span>`;
+    d.addEventListener('mousemove',e=>showTip(e,
+      `<span class="tt">${k}</span><span class="tv2">${fmt(v)}</span>
+       <span class="ts">rows · ${(v/tot*100).toFixed(2)}%</span>`));
+    d.addEventListener('mouseleave',hideTip);
+    host.appendChild(d);
+  });
+}
+
+/* ---------- render ---------- */
+function renderAll(){
+  drawCGM(); drawTIR(); drawCoverage(); drawReach();
+  drawStudies(); drawTimeline(); drawAge();
+  breakdown('bd-dev', D.cats.cgm_device, 5);
+  breakdown('bd-alg', D.cats.insulin_delivery_algorithm, 5);
+  breakdown('bd-mod', D.cats.insulin_delivery_modality, 3);
+  breakdown('bd-gen', D.cats.gender, 3);
+  breakdown('bd-eth', D.cats.ethnicity, 6);
+}
+renderAll();
+
+// redraw on theme change so SVG colors follow the tokens
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', renderAll);
+new MutationObserver(renderAll).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+window.addEventListener('resize', hideTip);
+
+/* ---------- standalone theme toggle ---------- */
+(function(){
+  const root=document.documentElement, btns=[...document.querySelectorAll('#themer button')];
+  let saved=null;
+  try{ saved=localStorage.getItem('t1d-profile-theme'); }catch(e){}
+  function apply(mode,persist){
+    if(mode==='auto') root.removeAttribute('data-theme');
+    else root.setAttribute('data-theme',mode);
+    btns.forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.set===mode)));
+    if(persist){ try{ localStorage.setItem('t1d-profile-theme',mode); }catch(e){} }
+    renderAll();
+  }
+  btns.forEach(b=>b.addEventListener('click',()=>apply(b.dataset.set,true)));
+  apply(saved==='light'||saved==='dark'?saved:'auto',false);
+})();
+</script>
+</body>
+</html>
