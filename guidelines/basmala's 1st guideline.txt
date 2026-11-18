@@ -1,0 +1,87 @@
+here is what we’ll do for the ML part.
+1. Preprocessing
+- Inspect the data first: number of patients , the 13 sources, and confirm the 5-minute time step.
+- Fill CGM gaps up to 30 minutes by interpolation only; cut at longer gaps.
+- cleaning 3ady elly e7na 3arfino for any data
+- Drop patients with too little data (we need several weeks each for personalization).
+- Build windows: 2-hour input (24 readings) + insulin, carbs, activity, time. Targets are glucose at +30 and +60 min; hypo (<70) and hyper (>180) labels come from future glucose. as mentioned at the draft 
+- Add features: Insulin-on-Board and Carbs-on-Board (decay curves), glucose rate of change, time of day as sin/cos.
+- Split by patient (and by source if possible); for known patients use a temporal split with a gap. No random split on windows, since overlap leaks data.
+- Compute normalization on train only. Loop is about 60% of the data, so use balanced sampling or weights across sources.
+- Hypo is rare: use weighted or focal loss.
+
+
+
+Splitting
+
+- Unseen patients (main test):
+-Split by patient, roughly 70/15/15 (train/val/test).
+-Stratify by source so every source appears in all three sets.
+-All windows of one patient stay in the same split.
+-Extra test: leave-one-source-out, holding out an entire source to measure generalization.
+- Known patients (for personalization):
+-Temporal split per patient: the first weeks for adaptation, then validation, and the last period for test.
+-A gap of at least 24 hours between parts so windows do not overlap.
+-Normalization statistics and thresholds are computed on train and validation only.
+-Limit Loop’s influence with a cap on windows per patient or per source.
+
+- Imbalance (hypo/hyper)
+
+1. First measure the hypo/hyper share in each source.
+2. Loss: weighted BCE  or focal loss. For regression, give more weight to errors below 70 mg/dL.
+3. Sampling: oversample hypo windows in train only, never in validation or test, together with balanced sampling across sources.
+4. Threshold: tune it on validation to reach a target recall (for example, at least 90% for hypo).
+5. Evaluation: on the test set with its natural distribution, using recall, PR-AUC and precision at fixed recall. Report RMSE separately in the hypo range, not only the overall average.
+
+
+
+Instead of Manually tuning it we can use optimization technique in many things like:
+1. Model hyperparameters
+-lightGBM: number of trees, depth, learning rate, regularization.
+-GRU/TCN: number of layers, hidden size, dropout, learning rate, window length.
+the technique: Optuna with pruning. It can be multi-objective: RMSE versus model size or latency, producing a Pareto front.
+
+2. Preprocessing settings
+
+-History length (1h / 2h / 3h) and the interpolation limit (15 / 30 min).
+-Decay constants in IOB/COB (insulin and carb action time). They can be found by optimization, or learned as trainable parameters inside the model, which strengthens the hybrid.
+
+3. Loss weights and thresholds
+
+pos weight, focal-loss gamma and the weight on hypo errors: tune with Optuna.
+Class thresholds: search on validation for the value that reaches a target recall (for example, at least 90%).
+
+4. Escalation thresholds
+
+When to escalate to the SLM or Cloud LLM can be framed as a constrained optimization: minimize the escalation rate (cloud cost) while keeping hypo recall and prediction-interval width within the required limits. Grid or Bayesian search on validation works.
+
+5. Compression settings
+
+Pruning ratio and quantization bit-width, trading accuracy against size: multi-objective search.
+
+6. Per-patient adapters
+
+Adaptation learning rate and number of steps: tune with a simple validation search, or with meta-learning.
+
+and this is important cautions:
+
+Tune on the validation set only, using the same patient-level split. Open the test set once at the end.
+Give the baselines the same tuning budget (same number of trials) as our model, so the comparison is fair. Reviewers look for this.
+Report the search spaces and number of trials in the paper.
+
+
+An idea worth trying is to use multi-objective Optuna (RMSE + hypo recall + model size) as part of the contribution, rather than just as tuning.
+
+
+The Models
+
+Baselines: Ridge, LightGBM, GRU/LSTM, small TCN. Compare under the MetaboNet-Bench protocol (RMSE at 30 min: GluForecast 19.95, LSTM 20.06).
+Our contribution:
+Hybrid: a simple physiological model (IOB/COB) plus a small GRU that learns the residual.
+Per-patient adapter: a global model with a small adapter tuned per patient.
+Uncertainty (quantiles or conformal) that decides when to escalate to the SLM and Cloud LLM.
+Distillation and quantization, reporting model size and latency.
+Ablation for each component to show it matters.
+
+
+

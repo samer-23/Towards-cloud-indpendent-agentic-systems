@@ -1,0 +1,21 @@
+{
+  "id": "ibrahimtarekyassin/medical-ml-data",
+  "id_no": 145610879,
+  "title": "Medical ML data ",
+  "code_file": "medical-ml-data.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "keywords": [],
+  "dataset_sources": [
+    "ibrahimtarekyassin/metabot-datasets"
+  ],
+  "kernel_sources": [],
+  "competition_sources": [],
+  "model_sources": [],
+  "docker_image": "gcr.io/kaggle-images/python@sha256:0717e81990be591f8c5f98f033d29ab23e9ffde057e5b3a6bd4371f93969e962",
+  "machine_shape": "None"
+}

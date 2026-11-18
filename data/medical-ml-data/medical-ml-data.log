@@ -1,0 +1,83 @@
+[{"stream_name":"stderr","time":11.9302027,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":11.930268522,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":11.930276502,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":11.93028078,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":12.856730321,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":12.856784203,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":12.856790222,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":12.856794352,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":16.393101411,"data":"=== STEP 2: EXPLORE VIA DUCKDB ===\n"}
+,{"stream_name":"stdout","time":28.084983334,"data":"   total_rows  total_subjects          start_time            end_time\n"}
+,{"stream_name":"stdout","time":28.085032532,"data":"0   132811004            1188 2011-11-17 21:00:00 2027-07-14 15:30:00\n"}
+,{"stream_name":"stdout","time":28.085038054,"data":"\n"}
+,{"stream_name":"stdout","time":28.085042448,"data":"--- Modality Breakdown ---\n"}
+,{"stream_name":"stdout","time":32.045387122,"data":"  insulin_delivery_modality  unique_patients  row_count\n"}
+,{"stream_name":"stdout","time":32.045425961,"data":"0                       SAP              226   18998161\n"}
+,{"stream_name":"stdout","time":32.045431476,"data":"1                       MDI               24     641742\n"}
+,{"stream_name":"stdout","time":32.045436524,"data":"2                      None               20    1164394\n"}
+,{"stream_name":"stdout","time":32.045442547,"data":"3                       AID             1114  112006707\n"}
+,{"stream_name":"stdout","time":32.045447325,"data":"\n"}
+,{"stream_name":"stdout","time":32.045452211,"data":"=== STEP 3: FILTER (Pumps Only) ===\n"}
+,{"stream_name":"stderr","time":73.651660713,"data":"Kernel died while waiting for execute reply.\n"}
+,{"stream_name":"stderr","time":74.773343905,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":74.779169222,"data":"  File \"/usr/local/lib/python3.13/dist-packages/nbclient/client.py\", line 949, in async_execute_cell\n"}
+,{"stream_name":"stderr","time":74.779211783,"data":"    exec_reply = await self.task_poll_for_reply\n"}
+,{"stream_name":"stderr","time":74.779219807,"data":"                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":74.779226761,"data":"  File \"/usr/local/lib/python3.13/dist-packages/nbclient/client.py\", line 730, in _async_poll_for_reply\n"}
+,{"stream_name":"stderr","time":74.779233888,"data":"    msg = await ensure_async(self.kc.shell_channel.get_msg(timeout=new_timeout))\n"}
+,{"stream_name":"stderr","time":74.779241143,"data":"          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":74.779247867,"data":"  File \"/usr/local/lib/python3.13/dist-packages/nbclient/util.py\", line 96, in ensure_async\n"}
+,{"stream_name":"stderr","time":74.779254605,"data":"    result = await obj\n"}
+,{"stream_name":"stderr","time":74.779261124,"data":"             ^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":74.779266932,"data":"  File \"/usr/local/lib/python3.13/dist-packages/jupyter_client/channels.py\", line 224, in get_msg\n"}
+,{"stream_name":"stderr","time":74.779301773,"data":"    ready = await self.socket.poll(timeout)\n"}
+,{"stream_name":"stderr","time":74.779307321,"data":"            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":74.779312597,"data":"asyncio.exceptions.CancelledError\n"}
+,{"stream_name":"stderr","time":74.779335708,"data":"\n"}
+,{"stream_name":"stderr","time":74.779340951,"data":"During handling of the above exception, another exception occurred:\n"}
+,{"stream_name":"stderr","time":74.779346325,"data":"\n"}
+,{"stream_name":"stderr","time":74.779351712,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":74.779357393,"data":"  File \"\u003cstring\u003e\", line 1, in \u003cmodule\u003e\n"}
+,{"stream_name":"stderr","time":74.779362504,"data":"    import sys;import papermill as pm;pm.execute_notebook(\"__notebook__.ipynb\",\"__notebook__.ipynb\",progress_bar=False,log_output=True,stdout_file=sys.stdout,stderr_file=sys.stderr,allow_errors=False,timeout=43200)\n"}
+,{"stream_name":"stderr","time":74.779369922,"data":"                                      ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":74.77937605,"data":"  File \"/usr/local/lib/python3.13/dist-packages/papermill/execute.py\", line 116, in execute_notebook\n"}
+,{"stream_name":"stderr","time":74.77938141,"data":"    nb = papermill_engines.execute_notebook_with_engine(\n"}
+,{"stream_name":"stderr","time":74.77938637,"data":"        engine_name,\n"}
+,{"stream_name":"stderr","time":74.779391295,"data":"    ...\u003c9 lines\u003e...\n"}
+,{"stream_name":"stderr","time":74.779396454,"data":"        **engine_kwargs,\n"}
+,{"stream_name":"stderr","time":74.77940707,"data":"    )\n"}
+,{"stream_name":"stderr","time":74.779414535,"data":"  File \"/usr/local/lib/python3.13/dist-packages/papermill/engines.py\", line 49, in execute_notebook_with_engine\n"}
+,{"stream_name":"stderr","time":74.779419704,"data":"    return self.get_engine(engine_name).execute_notebook(nb, kernel_name, **kwargs)\n"}
+,{"stream_name":"stderr","time":74.779424012,"data":"           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":74.779428487,"data":"  File \"/usr/local/lib/python3.13/dist-packages/papermill/engines.py\", line 371, in execute_notebook\n"}
+,{"stream_name":"stderr","time":74.78571459,"data":"    cls.execute_managed_notebook(nb_man, kernel_name, log_output=log_output, **kwargs)\n"}
+,{"stream_name":"stderr","time":74.785778711,"data":"    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":74.785785762,"data":"  File \"/usr/local/lib/python3.13/dist-packages/papermill/engines.py\", line 443, in execute_managed_notebook\n"}
+,{"stream_name":"stderr","time":74.785792063,"data":"    return PapermillNotebookClient(nb_man, **final_kwargs).execute()\n"}
+,{"stream_name":"stderr","time":74.785797144,"data":"           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n"}
+,{"stream_name":"stderr","time":74.785802694,"data":"  File \"/usr/local/lib/python3.13/dist-packages/papermill/clientwrap.py\", line 45, in execute\n"}
+,{"stream_name":"stderr","time":74.785808438,"data":"    self.papermill_execute_cells()\n"}
+,{"stream_name":"stderr","time":74.785813142,"data":"    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n"}
+,{"stream_name":"stderr","time":74.785818503,"data":"  File \"/usr/local/lib/python3.13/dist-packages/papermill/clientwrap.py\", line 72, in papermill_execute_cells\n"}
+,{"stream_name":"stderr","time":74.785841887,"data":"    self.execute_cell(cell, index)\n"}
+,{"stream_name":"stderr","time":74.785849274,"data":"    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":74.785854813,"data":"  File \"/usr/local/lib/python3.13/dist-packages/nbclient/util.py\", line 84, in wrapped\n"}
+,{"stream_name":"stderr","time":74.785873227,"data":"    return just_run(coro(*args, **kwargs))\n"}
+,{"stream_name":"stderr","time":74.785878984,"data":"  File \"/usr/local/lib/python3.13/dist-packages/nbclient/util.py\", line 62, in just_run\n"}
+,{"stream_name":"stderr","time":74.785884512,"data":"    return loop.run_until_complete(coro)\n"}
+,{"stream_name":"stderr","time":74.78588993,"data":"           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^\n"}
+,{"stream_name":"stderr","time":74.785894906,"data":"  File \"/usr/lib/python3.13/asyncio/base_events.py\", line 726, in run_until_complete\n"}
+,{"stream_name":"stderr","time":74.785900426,"data":"    return future.result()\n"}
+,{"stream_name":"stderr","time":74.785905264,"data":"           ~~~~~~~~~~~~~^^\n"}
+,{"stream_name":"stderr","time":74.785909552,"data":"  File \"/usr/local/lib/python3.13/dist-packages/nbclient/client.py\", line 953, in async_execute_cell\n"}
+,{"stream_name":"stderr","time":74.792535717,"data":"    raise DeadKernelError(\"Kernel died\")\n"}
+,{"stream_name":"stderr","time":74.79259614,"data":"nbclient.exceptions.DeadKernelError: Kernel died\n"}
+,{"stream_name":"stderr","time":79.714106033,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":79.714156951,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":80.228446614,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":80.228492998,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":82.856082331,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":82.965606528,"data":"[NbConvertApp] Writing 11615 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":86.726248852,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":88.172981476,"data":"[NbConvertApp] Writing 292850 bytes to __results__.html\n"}
+]
